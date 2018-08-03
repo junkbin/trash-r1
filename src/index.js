@@ -110,7 +110,7 @@ class Main {
                     "name":"Virat Kohli", 
                     "birthday":new Date()});
 
-                const myCar = realm.create('Car', {
+                realm.create('Car', {
                     make: 'Affixusss',
                     model: 'Civiccc',
                     miles: 10000,
@@ -127,10 +127,36 @@ class Main {
         }
     }
 
+    static async realDemoWriteWithErrorWithTxnWithAsync(){
+        let realm;
+        try{
+            realm = await Realm.open({schema: [AppSchema.CarSchema, AppSchema.PersonSchema]});
+            realm.beginTransaction();
+                
+            realm.create('Person', {
+                "name":"Virat Kohli", 
+                "birthday":new Date()});
+
+            realm.create('Car', {
+                make: 'Affixusss',
+                model: 'Civiccc',
+                miles: 10000,
+            });
+
+            // throw new Error("Runtime Error!!");
+            realm.commitTransaction();
+        }catch(err){
+            console.log(err);
+            if(realm){
+                realm.cancelTransaction();
+            }
+        }
+    }
+
 
     static main(){
         try{
-            Main.realDemoWriteWithErrorWithTxn();
+            Main.realDemoWriteWithErrorWithTxnWithAsync();
         }catch(err){
             console.error(err);
         }
