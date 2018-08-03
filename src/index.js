@@ -47,9 +47,90 @@ class Main {
         }
     }
 
+    static realDemoWrite(){
+        try{
+            let mpromise = Realm.open({schema: [AppSchema.CarSchema, AppSchema.PersonSchema]});
+            mpromise.then((realm)=>{
+                realm.write(() => {
+                    const myCar = realm.create('Car', {
+                        make: 'Affixusss',
+                        model: 'Civic',
+                        miles: 1000,
+                    });
+                    myCar.miles += 20; // Update a property value
+                });
+            }).catch((err)=>{
+                console.log(err);
+            });
+        }catch(err){
+            throw err;
+        }
+    }
+
+
+    static realDemoWriteWithError(){
+        try{
+            let mpromise = Realm.open({schema: [AppSchema.CarSchema, AppSchema.PersonSchema]});
+            mpromise.then((realm)=>{
+
+                realm.write(()=>{
+                    realm.create('Person', {
+                        "name":"Virat", 
+                        "birthday":new Date()});
+                });
+
+                throw new Error("Runtime Error");
+
+                // Create Car
+                realm.write(() => {
+                    const myCar = realm.create('Car', {
+                        make: 'Affixusss',
+                        model: 'Civiccc',
+                        miles: 10000,
+                    });
+                    myCar.miles += 20; // Update a property value
+                });
+            }).catch((err)=>{
+                console.log(err);
+            });
+        }catch(err){
+            throw err;
+        }
+    }
+
+    static realDemoWriteWithErrorWithTxn(){
+        try{
+            let realm;
+            let mpromise = Realm.open({schema: [AppSchema.CarSchema, AppSchema.PersonSchema]});
+            mpromise.then((data)=>{
+                realm = data;
+                realm.beginTransaction();
+                
+                realm.create('Person', {
+                    "name":"Virat Kohli", 
+                    "birthday":new Date()});
+
+                const myCar = realm.create('Car', {
+                    make: 'Affixusss',
+                    model: 'Civiccc',
+                    miles: 10000,
+                });
+
+                throw new Error("Runtime Error!!");
+                realm.commitTransaction();
+            }).catch((err)=>{
+                console.log(err);
+                realm.cancelTransaction();
+            });
+        }catch(err){
+            throw err;
+        }
+    }
+
+
     static main(){
         try{
-            Main.realmDemo();
+            Main.realDemoWriteWithErrorWithTxn();
         }catch(err){
             console.error(err);
         }
