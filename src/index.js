@@ -2,34 +2,13 @@
  * Realm Demo. 
  */
 const Realm = require('realm');
-
-// Define your models and their properties
-const CarSchema = {
-    name: 'Car',
-    properties: {
-      make:  'string',
-      model: 'string',
-      miles: {type: 'int', default: 0},
-    }
-};
+const AppSchema = require('./AppSchema');
   
-const PersonSchema = {
-    name: 'Person',
-    properties: {
-        name:     'string',
-        birthday: 'date',
-        cars:     'Car[]',
-        picture:  'data?' // optional property
-    }
-};
-  
-
 class Main {
     
-
-    static main(){
+    static realmDemo() {
         try{
-            Realm.open({schema: [CarSchema, PersonSchema]})
+            Realm.open({schema: [AppSchema.CarSchema, AppSchema.PersonSchema]})
             .then(realm => {
                 // Create Realm objects and write to local storage
                 realm.write(() => {
@@ -49,25 +28,35 @@ class Main {
 
                 // Add another car
                 realm.write(() => {
-                const myCar = realm.create('Car', {
-                    make: 'Ford',
-                    model: 'Focus',
-                    miles: 2000,
-                });
+                    const myCar = realm.create('Car', {
+                        make: 'Ford',
+                        model: 'Focus',
+                        miles: 2000,
+                    });
                 });
 
                 // Query results are updated in realtime
                 cars.length // => 2
-                
+                    
                 console.log(cars);
             }).catch(error => {
                 console.log(error);
             });
+        } catch(err){
+            throw err;
+        }
+    }
+
+    static main(){
+        try{
+            Main.realmDemo();
         }catch(err){
             console.error(err);
         }
     }
 }
+
+
 
 
 Main.main();
